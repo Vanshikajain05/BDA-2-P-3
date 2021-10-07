@@ -2,7 +2,7 @@ import warnings
 
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import numpy as np
 import seaborn as sns
 
 print("SECTION-A")
@@ -18,39 +18,29 @@ print("Overall chance of survival: ", titanic['survived'].value_counts(normalize
 
 print(" ")
 print("Q2. Find out the chance of survival for a Titanic passenger based on their sex and plot it.")
+print("Graph plotted ")
 print(" ")
-# Difference in survival between Male and Female.  How many females survived and how many males?
 
-male_female_survival = titanic.groupby('sex').sum()['survived']
-
-# total number of male passengers and total number of female passengers
-
-total_male_female = titanic['sex'].value_counts()
-
-male_female = male_female_survival / total_male_female
-print(male_female)
-probability = male_female.plot(kind='bar', title='Chance of Survival per Gender')
-probability.set_xlabel('Sex')
-probability.set_ylabel('Probability')
+sns.barplot(x="sex", y="survived", data=titanic)
 plt.show()
+print("Percentage of females survived",
+      titanic["survived"][titanic["sex"] == 'female'].value_counts(normalize=True)[1] * 100)
+print("Percentage of males survived",
+      titanic["survived"][titanic["sex"] == 'male'].value_counts(normalize=True)[1] * 100)
 
 print(" ")
 print("Q3. Find out the chance of survival for a Titanic passenger by traveling class wise and plot it. ")
+print("Graph plotted ")
 print(" ")
-# Difference in survival based on class
 
-class_wise_survival = titanic.groupby('pclass').sum()['survived']
-total_class_wise = titanic['pclass'].value_counts()
-survived = class_wise_survival / total_class_wise
-print(survived)
-
-# plot the resulting probabilities
-
-class_survival_prob = survived.plot(kind='bar', title='Chance of Survival per Class', color="red")
-
-class_survival_prob.set_ylabel('Probability of Survival')
-class_survival_prob.set_xlabel('Class')
+sns.barplot(x="pclass", y="survived", data=titanic)
 plt.show()
+print("Percentage of Pclass 1 survived",
+      titanic["survived"][titanic["pclass"] == 1].value_counts(normalize=True)[1] * 100)
+print("Percentage of Pclass 2 survived",
+      titanic["survived"][titanic["pclass"] == 2].value_counts(normalize=True)[1] * 100)
+print("Percentage of Pclass 3 survived",
+      titanic["survived"][titanic["pclass"] == 3].value_counts(normalize=True)[1] * 100)
 
 print(" ")
 
@@ -70,59 +60,64 @@ print(pd.concat([meanAgeMale, meanAgeFeMale], axis=1, keys=['Male', 'Female']))
 
 print(" ")
 
-print("Q5. Find out the chance of survival for a Titanic passenger based on number of siblings the passenger had on the ship and plot it.")
+print(
+    "Q5. Find out the chance of survival for a Titanic passenger based on number of siblings the passenger had on the "
+    "ship and plot it.")
+print("Graph plotted ")
 print(" ")
 
 sns.barplot(x="sibsp", y="survived", data=titanic)
 plt.show()
-print("Percentage of SibSp 0 who survived is", titanic["survived"][titanic["sibsp"] == 0].value_counts(normalize = True)[1]*100)
-print("Percentage of SibSp 1 who survived is", titanic["survived"][titanic["sibsp"] == 1].value_counts(normalize = True)[1]*100)
-print("Percentage of SibSp 2 who survived is", titanic["survived"][titanic["sibsp"] == 2].value_counts(normalize = True)[1]*100)
+print("Percentage of SibSp 0 who survived is",
+      titanic["survived"][titanic["sibsp"] == 0].value_counts(normalize=True)[1] * 100)
+print("Percentage of SibSp 1 who survived is",
+      titanic["survived"][titanic["sibsp"] == 1].value_counts(normalize=True)[1] * 100)
+print("Percentage of SibSp 2 who survived is",
+      titanic["survived"][titanic["sibsp"] == 2].value_counts(normalize=True)[1] * 100)
 
 print(" ")
 
 print("Q6. Find out the chance of survival for a Titanic passenger based on number of parents/children the passenger "
       "had on the ship and plot it.")
-
+print("Graph plotted ")
 sns.barplot(x="parch", y="survived", data=titanic)
 plt.show()
-print("Percentage of parch 0 who survived is", titanic["survived"][titanic["parch"] == 0].value_counts(normalize = True)[1]*100)
-print("Percentage of parch 1 who survived is", titanic["survived"][titanic["parch"] == 1].value_counts(normalize = True)[1]*100)
-print("Percentage of parch 2 who survived is", titanic["survived"][titanic["parch"] == 2].value_counts(normalize = True)[1]*100)
-print("Percentage of parch 3 who survived is", titanic["survived"][titanic["parch"] == 3].value_counts(normalize = True)[1]*100)
-
+print("Percentage of parch 0 who survived is",
+      titanic["survived"][titanic["parch"] == 0].value_counts(normalize=True)[1] * 100)
+print("Percentage of parch 1 who survived is",
+      titanic["survived"][titanic["parch"] == 1].value_counts(normalize=True)[1] * 100)
+print("Percentage of parch 2 who survived is",
+      titanic["survived"][titanic["parch"] == 2].value_counts(normalize=True)[1] * 100)
+print("Percentage of parch 3 who survived is",
+      titanic["survived"][titanic["parch"] == 3].value_counts(normalize=True)[1] * 100)
 
 print(" ")
 print("Q7. Plot out the variation of survival and death amongst passengers of different age. ")
+print("Graph plotted ")
 print(" ")
 
-# number of survivors in each age group
-
-each_age_group = titanic.groupby('age').sum()['survived']
-
-# number of passengers in each age group
-
-num_in_group = titanic['age'].value_counts(sort=False)
-
-# chance of survival for those in each age group
-
-age_survival = each_age_group / num_in_group
-age_survival.sort_values(inplace=True)
-
-# let's take a look at a visual for age by plotting the probabilities
-
-ap = age_survival.plot(kind='bar', title='Chance of Survival per Age Group')
-
-ap.set_ylabel('Age group')
-ap.set_xlabel('Probability of Survival')
+titanic["age"] = titanic["age"].fillna(-0.5)
+bins = [-1, 0, 5, 12, 18, 24, 35, 60, np.inf]
+labels = ['Unknown', 'Baby', 'Child', 'Teenager', 'Student', 'Young Adult', 'Adult', 'Senior']
+titanic['agegroup'] = pd.cut(titanic['age'], bins, labels=labels)
+sns.barplot(x="agegroup", y="survived", data=titanic)
 plt.show()
+
+g = sns.FacetGrid(titanic, col='survived')
+g.map(plt.hist, 'age', bins=20)
 
 print(" ")
 
 print("Q8. Plot out the variation of survival and death with age amongst passengers of different passenger classes.")
+print("Graph plotted ")
+
+
+grid = sns.FacetGrid(titanic, col='survived', row='pclass', size=3, aspect=2)
+grid.map(plt.hist, 'age', alpha=.5, bins=20)
+grid.add_legend()
+plt.show()
+
 
 print(" ")
 print("Q9. Find out the survival probability for a Titanic passenger based on title from the name of passenger.")
-print(" ")
-
 print(" ")
