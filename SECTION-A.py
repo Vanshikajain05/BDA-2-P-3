@@ -121,3 +121,24 @@ plt.show()
 print(" ")
 print("Q9. Find out the survival probability for a Titanic passenger based on title from the name of passenger.")
 print(" ")
+
+# create a combined group of both datasets
+combine = [titanic, test_df]
+
+# extract a title for each Name in the train and test datasets
+for dataset in combine:
+    dataset['Title'] = dataset.name.str.extract(' ([A-Za-z]+)\.', expand=False)
+
+pd.crosstab(titanic['Title'], titanic['sex'])
+
+for dataset in combine:
+    dataset['Title'] = dataset['Title'].replace(['Lady', 'Capt', 'Col',
+                                                 'Don', 'Dr', 'Major', 'Rev', 'Jonkheer', 'Dona'], 'Rare')
+
+    dataset['Title'] = dataset['Title'].replace(['Countess', 'Lady', 'Sir'], 'Royal')
+    dataset['Title'] = dataset['Title'].replace('Mlle', 'Miss')
+    dataset['Title'] = dataset['Title'].replace('Ms', 'Miss')
+    dataset['Title'] = dataset['Title'].replace('Mme', 'Mrs')
+
+print(titanic[['Title', 'survived']].groupby(['Title'], as_index=False).mean())
+
